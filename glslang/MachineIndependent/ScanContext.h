@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Google, Inc.
+// Copyright (C) 2013 LunarG, Inc.
 //
 // All rights reserved.
 //
@@ -15,7 +15,7 @@
 //    disclaimer in the documentation and/or other materials provided
 //    with the distribution.
 //
-//    Neither the name of Google Inc. nor the names of its
+//    Neither the name of 3Dlabs Inc. Ltd. nor the names of its
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
@@ -31,21 +31,56 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+//
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+//
+// This holds context specific to the GLSL scanner, which
+// sits between the preprocessor scanner and parser.
+//
 
-#include <string>
-
-#include "glslang/Include/ResourceLimits.h"
+#include "ParseHelper.h"
 
 namespace glslang {
 
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
+class TPpContext;
+class TPpToken;
+class TParserToken;
 
-}
+class TScanContext {
+public:
+    explicit TScanContext(TParseContextBase& pc) : parseContext(pc), afterType(false), field(false) { }
+    virtual ~TScanContext() { }
 
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+    static void fillInKeywordMap();
+    static void deleteKeywordMap();
+
+    int tokenize(TPpContext*, TParserToken&);
+
+protected:
+    TScanContext(TScanContext&);
+    TScanContext& operator=(TScanContext&);
+
+    int tokenizeIdentifier();
+    int identifierOrType();
+    int reservedWord();
+    int identifierOrReserved(bool reserved);
+    int es30ReservedFromGLSL(int version);
+    int nonreservedKeyword(int esVersion, int nonEsVersion);
+    int precisionKeyword();
+    int matNxM();
+    int dMat();
+    int firstGenerationImage(bool inEs310);
+    int secondGenerationImage();
+
+    TParseContextBase& parseContext;
+    bool afterType;           // true if we've recognized a type, so can only be looking for an identifier
+    bool field;               // true if we're on a field, right after a '.'
+    TSourceLoc loc;
+    TParserToken* parserToken;
+    TPpToken* ppToken;
+
+    const char* tokenText;
+    int keyword;
+};
+
+} // end namespace glslang

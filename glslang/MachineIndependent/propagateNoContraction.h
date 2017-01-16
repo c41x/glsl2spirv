@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Google, Inc.
+// Copyright (C) 2015-2016 Google, Inc.
 //
 // All rights reserved.
 //
@@ -32,20 +32,22 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+//
+// Visit the nodes in the glslang intermediate tree representation to
+// propagate 'noContraction' qualifier.
+//
 
-#include <string>
-
-#include "glslang/Include/ResourceLimits.h"
+#include "../Include/intermediate.h"
 
 namespace glslang {
 
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
-
-}
-
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+// Propagates the 'precise' qualifier for objects (objects marked with
+// 'noContraction' qualifier) from the shader source specified 'precise'
+// variables to all the involved objects, and add 'noContraction' qualifier for
+// the involved arithmetic operations.
+// Note that the same qualifier: 'noContraction' is used in both object nodes
+// and arithmetic operation nodes, but has different meaning. For object nodes,
+// 'noContraction' means the object is 'precise'; and for arithmetic operation
+// nodes, it means the operation should not be contracted.
+void PropagateNoContraction(const glslang::TIntermediate& intermediate);
+};

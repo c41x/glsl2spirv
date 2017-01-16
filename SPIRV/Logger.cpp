@@ -32,20 +32,37 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+#include "Logger.h"
 
-#include <string>
+#include <algorithm>
+#include <iterator>
+#include <sstream>
 
-#include "glslang/Include/ResourceLimits.h"
+namespace spv {
 
-namespace glslang {
-
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
-
+void SpvBuildLogger::tbdFunctionality(const std::string& f)
+{
+    if (std::find(std::begin(tbdFeatures), std::end(tbdFeatures), f) == std::end(tbdFeatures))
+        tbdFeatures.push_back(f);
 }
 
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+void SpvBuildLogger::missingFunctionality(const std::string& f)
+{
+    if (std::find(std::begin(missingFeatures), std::end(missingFeatures), f) == std::end(missingFeatures))
+        missingFeatures.push_back(f);
+}
+
+std::string SpvBuildLogger::getAllMessages() const {
+    std::ostringstream messages;
+    for (auto it = tbdFeatures.cbegin(); it != tbdFeatures.cend(); ++it)
+        messages << "TBD functionality: " << *it << "\n";
+    for (auto it = missingFeatures.cbegin(); it != missingFeatures.cend(); ++it)
+        messages << "Missing functionality: " << *it << "\n";
+    for (auto it = warnings.cbegin(); it != warnings.cend(); ++it)
+        messages << "warning: " << *it << "\n";
+    for (auto it = errors.cbegin(); it != errors.cend(); ++it)
+        messages << "error: " << *it << "\n";
+    return messages.str();
+}
+
+} // end spv namespace

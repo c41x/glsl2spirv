@@ -1,6 +1,5 @@
 //
-// Copyright (C) 2016 Google, Inc.
-//
+// Copyright (C) 2002-2005  3Dlabs Inc. Ltd.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -15,7 +14,7 @@
 //    disclaimer in the documentation and/or other materials provided
 //    with the distribution.
 //
-//    Neither the name of Google Inc. nor the names of its
+//    Neither the name of 3Dlabs Inc. Ltd. nor the names of its
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
@@ -31,21 +30,47 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+//
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+#include "../Include/Common.h"
+#include "../Include/ShHandle.h"
+#include "../MachineIndependent/Versions.h"
 
-#include <string>
+//
+// Here is where real machine specific high-level data would be defined.
+//
+class TGenericCompiler : public TCompiler {
+public:
+    TGenericCompiler(EShLanguage l, int dOptions) : TCompiler(l, infoSink), debugOptions(dOptions) { }
+    virtual bool compile(TIntermNode* root, int version = 0, EProfile profile = ENoProfile);
+    TInfoSink infoSink;
+    int debugOptions;
+};
 
-#include "glslang/Include/ResourceLimits.h"
-
-namespace glslang {
-
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
-
+//
+// This function must be provided to create the actual
+// compile object used by higher level code.  It returns
+// a subclass of TCompiler.
+//
+TCompiler* ConstructCompiler(EShLanguage language, int debugOptions)
+{
+    return new TGenericCompiler(language, debugOptions);
 }
 
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+//
+// Delete the compiler made by ConstructCompiler
+//
+void DeleteCompiler(TCompiler* compiler)
+{
+    delete compiler;
+}
+
+//
+//  Generate code from the given parse tree
+//
+bool TGenericCompiler::compile(TIntermNode* /*root*/, int /*version*/, EProfile /*profile*/)
+{
+    haveValidObjectCode = true;
+
+    return haveValidObjectCode;
+}

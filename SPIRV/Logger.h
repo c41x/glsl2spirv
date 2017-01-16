@@ -32,20 +32,43 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+#ifndef GLSLANG_SPIRV_LOGGER_H
+#define GLSLANG_SPIRV_LOGGER_H
 
 #include <string>
+#include <vector>
 
-#include "glslang/Include/ResourceLimits.h"
+namespace spv {
 
-namespace glslang {
+// A class for holding all SPIR-V build status messages, including
+// missing/TBD functionalities, warnings, and errors.
+class SpvBuildLogger {
+public:
+    SpvBuildLogger() {}
 
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
+    // Registers a TBD functionality.
+    void tbdFunctionality(const std::string& f);
+    // Registers a missing functionality.
+    void missingFunctionality(const std::string& f);
 
-}
+    // Logs a warning.
+    void warning(const std::string& w) { warnings.push_back(w); }
+    // Logs an error.
+    void error(const std::string& e) { errors.push_back(e); }
 
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+    // Returns all messages accumulated in the order of:
+    // TBD functionalities, missing functionalities, warnings, errors.
+    std::string getAllMessages() const;
+
+private:
+    SpvBuildLogger(const SpvBuildLogger&);
+
+    std::vector<std::string> tbdFeatures;
+    std::vector<std::string> missingFeatures;
+    std::vector<std::string> warnings;
+    std::vector<std::string> errors;
+};
+
+} // end spv namespace
+
+#endif // GLSLANG_SPIRV_LOGGER_H

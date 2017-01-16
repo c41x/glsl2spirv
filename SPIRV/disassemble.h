@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 Google, Inc.
+// Copyright (C) 2014-2015 LunarG, Inc.
 //
 // All rights reserved.
 //
@@ -15,7 +15,7 @@
 //    disclaimer in the documentation and/or other materials provided
 //    with the distribution.
 //
-//    Neither the name of Google Inc. nor the names of its
+//    Neither the name of 3Dlabs Inc. Ltd. nor the names of its
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
@@ -32,20 +32,21 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
-#define _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+//
+// Disassembler for SPIR-V.
+//
 
-#include <string>
+#pragma once
+#ifndef disassembler_H
+#define disassembler_H
 
-#include "glslang/Include/ResourceLimits.h"
+#include <iostream>
+#include <vector>
 
-namespace glslang {
+namespace spv {
 
-// These are the default resources for TBuiltInResources, used for both
-//  - parsing this string for the case where the user didn't supply one,
-//  - dumping out a template for user construction of a config file.
-extern const TBuiltInResource DefaultTBuiltInResource;
+    void Disassemble(std::ostream& out, const std::vector<unsigned int>&);
 
-}
+};  // end namespace spv
 
-#endif  // _STAND_ALONE_RESOURCE_LIMITS_INCLUDED_
+#endif // disassembler_H
