@@ -1,6 +1,9 @@
 #ifndef GLSL_2_SPIRV_HPP
 #define GLSL_2_SPIRV_HPP
 
+#include <vector>
+#include <functional>
+
 enum glsl2spirvShaderType {
     glsl2spirvShaderTypeVertex,
     glsl2spirvShaderTypeTessControl,
